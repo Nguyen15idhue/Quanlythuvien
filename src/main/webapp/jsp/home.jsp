@@ -1,14 +1,14 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%
-    if (session == null || session.getAttribute("userEmail") == null) {
+    if (session == null || session.getAttribute("tenDangNhap") == null) {
         response.sendRedirect(request.getContextPath() + "/jsp/login.jsp");
         return;
     }
 
-    String username = (String) session.getAttribute("username");
-    String email = (String) session.getAttribute("userEmail");
-    String role = (String) session.getAttribute("userRole");
+    Integer maTK = (Integer) session.getAttribute("maTK");
+    String tenDangNhap = (String) session.getAttribute("tenDangNhap");
+    String vaiTro = (String) session.getAttribute("vaiTro");
 %>
 
 <!DOCTYPE html>
@@ -21,10 +21,10 @@
 <body class="bg-light">
   <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container-fluid">
-      <a class="navbar-brand" href="#">📚 Library System</a>
+      <a class="navbar-brand" href="#">📚 Quản Lý Thư Viện</a>
       <div class="d-flex">
         <span class="navbar-text text-white me-3">
-          Xin chào, <b><%= username %></b> (<%= role %>)
+          Xin chào, <b><%= tenDangNhap %></b> (<%= vaiTro %>)
         </span>
         <a href="<%= request.getContextPath() %>/LogoutController" class="btn btn-outline-light btn-sm">
           Đăng xuất
@@ -35,13 +35,15 @@
 
   <div class="container mt-5 text-center">
     <h2>🎉 Chào mừng bạn đến với Hệ thống Quản lý Thư viện</h2>
-    <p>Email của bạn: <b><%= email %></b></p>
-    <p>Vai trò: <b><%= role %></b></p>
+    <p>Mã tài khoản: <b><%= maTK %></b></p>
+    <p>Tên đăng nhập: <b><%= tenDangNhap %></b></p>
+    <p>Vai trò: <b><%= vaiTro %></b></p>
 
     <hr>
     <div class="mt-4">
-      <a href="#" class="btn btn-success">📖 Quản lý Sách</a>
+      <a href="<%= request.getContextPath() %>/jsp/books/books.jsp" class="btn btn-success">📖 Quản lý Sách</a>
       <a href="#" class="btn btn-info">👥 Quản lý Độc Giả</a>
+      <a href="#" class="btn btn-warning">📋 Quản lý Mượn/Trả</a>
       <a href="#" class="btn btn-secondary">🔍 Tìm kiếm</a>
     </div>
   </div>

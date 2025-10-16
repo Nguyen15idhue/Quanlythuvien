@@ -6,67 +6,84 @@ import javax.servlet.http.*;
 import dao.UserDAO;
 
 public class RegisterController extends HttpServlet {
-    private static final long serialVersionUID = 1L; // ✅ để loại bỏ cảnh báo
+    private static final long serialVersionUID = 1L;
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
 
-        // ✅ Thiết lập mã hóa UTF-8 để tránh lỗi tiếng Việt
+        System.out.println("==========================================");
+        System.out.println("[RegisterController] Nhận yêu cầu đăng ký");
+        
+        // Thiết lập mã hóa UTF-8
         req.setCharacterEncoding("UTF-8");
         res.setCharacterEncoding("UTF-8");
 
-        String email = req.getParameter("email") != null ? req.getParameter("email").trim() : "";
-        String username = req.getParameter("username") != null ? req.getParameter("username").trim() : "";
-        String password = req.getParameter("password") != null ? req.getParameter("password").trim() : "";
+        String tenDangNhap = req.getParameter("tenDangNhap") != null ? req.getParameter("tenDangNhap").trim() : "";
+        String matKhau = req.getParameter("matKhau") != null ? req.getParameter("matKhau").trim() : "";
         String confirmPassword = req.getParameter("confirmPassword") != null ? req.getParameter("confirmPassword").trim() : "";
+        String vaiTro = req.getParameter("vaiTro") != null ? req.getParameter("vaiTro").trim() : "NHANVIEN";
 
-        // ✅ Kiểm tra dữ liệu trống
-        if (email.isEmpty() || username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+        System.out.println("[RegisterController] Username: " + tenDangNhap);
+        System.out.println("[RegisterController] Password length: " + matKhau.length());
+        System.out.println("[RegisterController] Vai trò: " + vaiTro);
+        
+        // Kiểm tra dữ liệu trống
+        if (tenDangNhap.isEmpty() || matKhau.isEmpty() || confirmPassword.isEmpty()) {
+            System.err.println("[RegisterController] ❌ Dữ liệu trống!");
             req.setAttribute("error", "Vui lòng điền đầy đủ thông tin.");
             req.getRequestDispatcher("/jsp/register.jsp").forward(req, res);
             return;
         }
 
-        // ✅ Kiểm tra định dạng email
-        if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
-            req.setAttribute("error", "Email không hợp lệ.");
+        // Kiểm tra mật khẩu trùng khớp
+        if (!matKhau.equals(confirmPassword)) {
+            req.setAttribute("error", "Mật khẩu nhập lại không khớp.");
             req.getRequestDispatcher("/jsp/register.jsp").forward(req, res);
             return;
         }
 
-        // ✅ Kiểm tra mật khẩu trùng khớp
-        if (!password.equals(confirmPassword)) {
-            req.setAttribute("error", "Mật khẩu nhập lại không khớp.");
+        // Kiểm tra độ dài mật khẩu
+        if (matKhau.length() < 6) {
+            req.setAttribute("error", "Mật khẩu phải có ít nhất 6 ký tự.");
             req.getRequestDispatcher("/jsp/register.jsp").forward(req, res);
             return;
         }
 
         UserDAO dao = new UserDAO();
 
-        // ✅ Kiểm tra email đã tồn tại
-        if (dao.emailExists(email)) {
-            req.setAttribute("error", "Email đã được đăng ký, vui lòng đăng nhập.");
+        // Kiểm tra tên đăng nhập đã tồn tại
+        if (dao.usernameExists(tenDangNhap)) {
+            req.setAttribute("error", "Tên đăng nhập đã tồn tại, vui lòng chọn tên khác.");
             req.getRequestDispatcher("/jsp/register.jsp").forward(req, res);
             return;
         }
 
-        // ✅ Tạo tài khoản mới với role mặc định "reader"
-        boolean success = dao.createUser(email, username, password, "reader");
+        // Validate vai trò (chỉ cho phép ADMIN hoặc NHANVIEN)
+        if (!vaiTro.equals("ADMIN") && !vaiTro.equals("NHANVIEN")) {
+            vaiTro = "NHANVIEN"; // Mặc định là NHANVIEN
+        }
+
+        // Tạo tài khoản mới
+        System.out.println("[RegisterController] Đang tạo tài khoản...");
+        boolean success = dao.createUser(tenDangNhap, matKhau, vaiTro);
 
         if (success) {
+            System.out.println("[RegisterController] ✅ Đăng ký thành công!");
             req.setAttribute("message", "Đăng ký thành công! Vui lòng đăng nhập.");
             req.getRequestDispatcher("/jsp/login.jsp").forward(req, res);
         } else {
+            System.err.println("[RegisterController] ❌ Đăng ký thất bại!");
             req.setAttribute("error", "Đăng ký thất bại, thử lại sau.");
             req.getRequestDispatcher("/jsp/register.jsp").forward(req, res);
         }
+        System.out.println("==========================================\n");
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
-        // ✅ Khi người dùng mở trực tiếp link /RegisterController → hiển thị form
+        // Hiển thị form đăng ký
         req.getRequestDispatcher("/jsp/register.jsp").forward(req, res);
     }
 }

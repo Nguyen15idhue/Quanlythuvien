@@ -7,7 +7,7 @@ public class DBConnection {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             conn = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/library_db", "root", "");
+                "jdbc:mysql://localhost:3306/quanlythuvien?useUnicode=true&characterEncoding=UTF-8", "root", "");
         } catch (Exception e) {
             e.printStackTrace();
         }

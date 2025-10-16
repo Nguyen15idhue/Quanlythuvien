@@ -12,16 +12,17 @@
       <h4 class="card-title text-center mb-3">Đăng nhập</h4>
       <form method="post" action="${pageContext.request.contextPath}/LoginController">
         <div class="mb-2">
-          <label class="form-label">Email</label>
-          <input type="email" name="email" required class="form-control" placeholder="email@domain">
+          <label class="form-label">Tên đăng nhập</label>
+          <input type="text" name="tenDangNhap" required class="form-control" placeholder="Nhập tên đăng nhập">
         </div>
         <div class="mb-3">
           <label class="form-label">Mật khẩu</label>
-          <input type="password" name="password" required class="form-control" placeholder="Mật khẩu">
+          <input type="password" name="matKhau" required class="form-control" placeholder="Nhập mật khẩu">
         </div>
         <button type="submit" class="btn btn-primary w-100">Đăng nhập</button>
       </form>
       <div class="mt-2 text-danger">${error}</div>
+      <div class="mt-2 text-success">${message}</div>
      
       <div class="mt-3 text-center">
 	  <a href="${pageContext.request.contextPath}/jsp/register.jsp">Chưa có tài khoản? Đăng ký ngay</a>

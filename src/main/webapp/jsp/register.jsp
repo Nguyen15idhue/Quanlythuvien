@@ -12,20 +12,23 @@
       <h4 class="text-center mb-3">Đăng ký tài khoản</h4>
       <form method="post" action="${pageContext.request.contextPath}/RegisterController">
         <div class="mb-2">
-          <label>Email</label>
-          <input type="email" class="form-control" name="email" required>
-        </div>
-        <div class="mb-2">
-          <label>Tên hiển thị</label>
-          <input type="text" class="form-control" name="username" required>
+          <label>Tên đăng nhập</label>
+          <input type="text" class="form-control" name="tenDangNhap" required>
         </div>
         <div class="mb-2">
           <label>Mật khẩu</label>
-          <input type="password" class="form-control" name="password" required>
+          <input type="password" class="form-control" name="matKhau" required>
         </div>
         <div class="mb-3">
           <label>Nhập lại mật khẩu</label>
           <input type="password" class="form-control" name="confirmPassword" required>
+        </div>
+        <div class="mb-3">
+          <label>Vai trò</label>
+          <select class="form-control" name="vaiTro">
+            <option value="NHANVIEN" selected>Nhân viên</option>
+            <option value="ADMIN">Quản trị viên</option>
+          </select>
         </div>
         <button type="submit" class="btn btn-success w-100">Đăng ký</button>
       </form>

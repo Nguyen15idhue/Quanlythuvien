@@ -1,20 +1,49 @@
 package model;
 
 public class User {
-    private int id;
-    private String email;
-    private String username;
-    private String role;
+    private int maTK;
+    private String tenDangNhap;
+    private String matKhau;
+    private String vaiTro; // ADMIN hoặc NHANVIEN
 
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public User() {}
 
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
+    public User(int maTK, String tenDangNhap, String matKhau, String vaiTro) {
+        this.maTK = maTK;
+        this.tenDangNhap = tenDangNhap;
+        this.matKhau = matKhau;
+        this.vaiTro = vaiTro;
+    }
 
-    public String getUsername() { return username; }
-    public void setUsername(String username) { this.username = username; }
+    public int getMaTK() { 
+        return maTK; 
+    }
+    
+    public void setMaTK(int maTK) { 
+        this.maTK = maTK; 
+    }
 
-    public String getRole() { return role; }
-    public void setRole(String role) { this.role = role; }
+    public String getTenDangNhap() { 
+        return tenDangNhap; 
+    }
+    
+    public void setTenDangNhap(String tenDangNhap) { 
+        this.tenDangNhap = tenDangNhap; 
+    }
+
+    public String getMatKhau() { 
+        return matKhau; 
+    }
+    
+    public void setMatKhau(String matKhau) { 
+        this.matKhau = matKhau; 
+    }
+
+    public String getVaiTro() { 
+        return vaiTro; 
+    }
+    
+    public void setVaiTro(String vaiTro) { 
+        this.vaiTro = vaiTro; 
+    }
 }
