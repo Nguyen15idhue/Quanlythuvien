@@ -36,6 +36,16 @@
 	  <url-pattern>/LogoutController</url-pattern>
 	</servlet-mapping>
 
+  <servlet>
+    <servlet-name>DocgiaController</servlet-name>
+    <servlet-class>controller.docgia.DocgiaController</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>DocgiaController</servlet-name>
+    <url-pattern>/DocgiaController</url-pattern>
+  </servlet-mapping>
+
   <!-- ======================== WELCOME PAGE ======================== -->
   <welcome-file-list>
     <welcome-file>jsp/login.jsp</welcome-file>

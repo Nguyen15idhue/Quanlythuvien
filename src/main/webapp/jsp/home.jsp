@@ -42,7 +42,7 @@
     <hr>
     <div class="mt-4">
       <a href="<%= request.getContextPath() %>/jsp/books/books.jsp" class="btn btn-success">📖 Quản lý Sách</a>
-      <a href="#" class="btn btn-info">👥 Quản lý Độc Giả</a>
+      <a href="<%= request.getContextPath() %>/DocgiaController" class="btn btn-info">👥 Quản lý Độc Giả</a>
       <a href="#" class="btn btn-warning">📋 Quản lý Mượn/Trả</a>
       <a href="#" class="btn btn-secondary">🔍 Tìm kiếm</a>
     </div>
