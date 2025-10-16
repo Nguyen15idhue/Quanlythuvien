@@ -10,7 +10,7 @@ public class UserDAO {
     // Tạo tài khoản mới (hash password trước khi lưu)
     public boolean createUser(String tenDangNhap, String matKhau, String vaiTro) {
         System.out.println("[UserDAO] createUser() - Bắt đầu tạo user: " + tenDangNhap);
-        String sql = "INSERT INTO taikhoan (TenDangNhap, MatKhau, VaiTro) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO taikhoan (ten_dang_nhap, mat_khau, vai_tro) VALUES (?, ?, ?)";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             
@@ -45,7 +45,7 @@ public class UserDAO {
     // Kiểm tra đăng nhập (trả về User nếu đúng)
     public User checkLogin(String tenDangNhap, String matKhau) {
         System.out.println("[UserDAO] checkLogin() - Đăng nhập với user: " + tenDangNhap);
-        String sql = "SELECT MaTK, TenDangNhap, MatKhau, VaiTro FROM taikhoan WHERE TenDangNhap = ?";
+        String sql = "SELECT ma_tk, ten_dang_nhap, mat_khau, vai_tro FROM taikhoan WHERE ten_dang_nhap = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             
@@ -60,7 +60,7 @@ public class UserDAO {
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     System.out.println("[UserDAO] ✅ Tìm thấy user trong DB");
-                    String hashedPassword = rs.getString("MatKhau");
+                    String hashedPassword = rs.getString("mat_khau");
                     System.out.println("[UserDAO] Hash từ DB: " + hashedPassword.substring(0, 20) + "...");
                     
                     // Kiểm tra password với BCrypt
@@ -68,10 +68,10 @@ public class UserDAO {
                     if (BCrypt.checkpw(matKhau, hashedPassword)) {
                         System.out.println("[UserDAO] ✅ Mật khẩu đúng!");
                         User u = new User();
-                        u.setMaTK(rs.getInt("MaTK"));
-                        u.setTenDangNhap(rs.getString("TenDangNhap"));
+                        u.setMaTK(rs.getInt("ma_tk"));
+                        u.setTenDangNhap(rs.getString("ten_dang_nhap"));
                         u.setMatKhau(hashedPassword);
-                        u.setVaiTro(rs.getString("VaiTro"));
+                        u.setVaiTro(rs.getString("vai_tro"));
                         return u;
                     } else {
                         System.err.println("[UserDAO] ❌ Mật khẩu sai!");
@@ -93,7 +93,7 @@ public class UserDAO {
     // Kiểm tra tên đăng nhập đã tồn tại chưa
     public boolean usernameExists(String tenDangNhap) {
         System.out.println("[UserDAO] usernameExists() - Kiểm tra user: " + tenDangNhap);
-        String sql = "SELECT TenDangNhap FROM taikhoan WHERE TenDangNhap = ?";
+        String sql = "SELECT ten_dang_nhap FROM taikhoan WHERE ten_dang_nhap = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, tenDangNhap);
@@ -131,5 +131,44 @@ public class UserDAO {
             System.err.println("[UserDAO] ❌ Lỗi SQL: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    // Lấy danh sách các vai trò từ ENUM trong database
+    public java.util.List<String> getVaiTroList() {
+        System.out.println("[UserDAO] getVaiTroList() - Lấy danh sách vai trò từ DB...");
+        java.util.List<String> vaiTroList = new java.util.ArrayList<>();
+        String sql = "SELECT COLUMN_TYPE FROM INFORMATION_SCHEMA.COLUMNS " +
+                     "WHERE TABLE_SCHEMA = DATABASE() " +
+                     "AND TABLE_NAME = 'taikhoan' " +
+                     "AND COLUMN_NAME = 'vai_tro'";
+        
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            
+            if (rs.next()) {
+                String columnType = rs.getString("COLUMN_TYPE");
+                // columnType sẽ có dạng: enum('ADMIN','NHANVIEN','DOCGIA')
+                System.out.println("[UserDAO] Column Type: " + columnType);
+                
+                // Parse ENUM values
+                if (columnType != null && columnType.startsWith("enum(")) {
+                    String enumValues = columnType.substring(5, columnType.length() - 1);
+                    String[] values = enumValues.split(",");
+                    for (String value : values) {
+                        // Loại bỏ dấu nháy đơn
+                        String cleanValue = value.trim().replace("'", "");
+                        vaiTroList.add(cleanValue);
+                        System.out.println("[UserDAO] Vai trò: " + cleanValue);
+                    }
+                }
+            }
+            System.out.println("[UserDAO] ✅ Lấy được " + vaiTroList.size() + " vai trò");
+        } catch (SQLException e) {
+            System.err.println("[UserDAO] ❌ Lỗi SQL: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return vaiTroList;
     }
 }

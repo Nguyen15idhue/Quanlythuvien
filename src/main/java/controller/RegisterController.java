@@ -28,10 +28,13 @@ public class RegisterController extends HttpServlet {
         System.out.println("[RegisterController] Password length: " + matKhau.length());
         System.out.println("[RegisterController] Vai trò: " + vaiTro);
         
+        UserDAO dao = new UserDAO();
+        
         // Kiểm tra dữ liệu trống
         if (tenDangNhap.isEmpty() || matKhau.isEmpty() || confirmPassword.isEmpty()) {
             System.err.println("[RegisterController] ❌ Dữ liệu trống!");
             req.setAttribute("error", "Vui lòng điền đầy đủ thông tin.");
+            req.setAttribute("vaiTroList", dao.getVaiTroList());
             req.getRequestDispatcher("/jsp/register.jsp").forward(req, res);
             return;
         }
@@ -39,6 +42,7 @@ public class RegisterController extends HttpServlet {
         // Kiểm tra mật khẩu trùng khớp
         if (!matKhau.equals(confirmPassword)) {
             req.setAttribute("error", "Mật khẩu nhập lại không khớp.");
+            req.setAttribute("vaiTroList", dao.getVaiTroList());
             req.getRequestDispatcher("/jsp/register.jsp").forward(req, res);
             return;
         }
@@ -46,22 +50,23 @@ public class RegisterController extends HttpServlet {
         // Kiểm tra độ dài mật khẩu
         if (matKhau.length() < 6) {
             req.setAttribute("error", "Mật khẩu phải có ít nhất 6 ký tự.");
+            req.setAttribute("vaiTroList", dao.getVaiTroList());
             req.getRequestDispatcher("/jsp/register.jsp").forward(req, res);
             return;
         }
-
-        UserDAO dao = new UserDAO();
 
         // Kiểm tra tên đăng nhập đã tồn tại
         if (dao.usernameExists(tenDangNhap)) {
             req.setAttribute("error", "Tên đăng nhập đã tồn tại, vui lòng chọn tên khác.");
+            req.setAttribute("vaiTroList", dao.getVaiTroList());
             req.getRequestDispatcher("/jsp/register.jsp").forward(req, res);
             return;
         }
 
-        // Validate vai trò (chỉ cho phép ADMIN hoặc NHANVIEN)
-        if (!vaiTro.equals("ADMIN") && !vaiTro.equals("NHANVIEN")) {
-            vaiTro = "NHANVIEN"; // Mặc định là NHANVIEN
+        // Validate vai trò với danh sách từ database
+        java.util.List<String> vaiTroList = dao.getVaiTroList();
+        if (!vaiTroList.contains(vaiTro)) {
+            vaiTro = "DOCGIA"; // Mặc định là DOCGIA
         }
 
         // Tạo tài khoản mới
@@ -75,6 +80,7 @@ public class RegisterController extends HttpServlet {
         } else {
             System.err.println("[RegisterController] ❌ Đăng ký thất bại!");
             req.setAttribute("error", "Đăng ký thất bại, thử lại sau.");
+            req.setAttribute("vaiTroList", dao.getVaiTroList());
             req.getRequestDispatcher("/jsp/register.jsp").forward(req, res);
         }
         System.out.println("==========================================\n");
@@ -83,6 +89,11 @@ public class RegisterController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
+        // Lấy danh sách vai trò từ database
+        UserDAO dao = new UserDAO();
+        java.util.List<String> vaiTroList = dao.getVaiTroList();
+        req.setAttribute("vaiTroList", vaiTroList);
+        
         // Hiển thị form đăng ký
         req.getRequestDispatcher("/jsp/register.jsp").forward(req, res);
     }

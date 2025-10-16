@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="java.util.List" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -26,8 +27,34 @@
         <div class="mb-3">
           <label>Vai trò</label>
           <select class="form-control" name="vaiTro">
-            <option value="NHANVIEN" selected>Nhân viên</option>
-            <option value="ADMIN">Quản trị viên</option>
+            <%
+              List<String> vaiTroList = (List<String>) request.getAttribute("vaiTroList");
+              if (vaiTroList != null && !vaiTroList.isEmpty()) {
+                for (String vaiTro : vaiTroList) {
+                  String displayName = vaiTro;
+                  // Chuyển đổi tên hiển thị
+                  if (vaiTro.equals("ADMIN")) {
+                    displayName = "Quản trị viên";
+                  } else if (vaiTro.equals("NHANVIEN")) {
+                    displayName = "Nhân viên";
+                  } else if (vaiTro.equals("DOCGIA")) {
+                    displayName = "Độc giả";
+                  }
+                  // Mặc định chọn DOCGIA
+                  String selected = vaiTro.equals("DOCGIA") ? "selected" : "";
+            %>
+                  <option value="<%= vaiTro %>" <%= selected %>><%= displayName %></option>
+            <%
+                }
+              } else {
+                // Fallback nếu không lấy được từ database
+            %>
+                <option value="DOCGIA" selected>Độc giả</option>
+                <option value="NHANVIEN">Nhân viên</option>
+                <option value="ADMIN">Quản trị viên</option>
+            <%
+              }
+            %>
           </select>
         </div>
         <button type="submit" class="btn btn-success w-100">Đăng ký</button>
